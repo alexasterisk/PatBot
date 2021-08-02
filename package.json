@@ -1,0 +1,26 @@
+{
+  "name": "patbot",
+  "version": "1.0.0",
+  "description": "a simple patting bot",
+  "main": "entry.js",
+  "scripts": {
+    "start": "node entry"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/warfurret/PatBot.git"
+  },
+  "author": "Alexfurret#8525",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/warfurret/PatBot/issues"
+  },
+  "homepage": "https://github.com/warfurret/PatBot#readme",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "dotenv": "^10.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0"
+  }
+}

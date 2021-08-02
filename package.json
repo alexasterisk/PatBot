@@ -17,8 +17,10 @@
   },
   "homepage": "https://github.com/warfurret/PatBot#readme",
   "dependencies": {
+    "chalk": "^4.1.2",
     "discord.js": "^12.5.3",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "pet-pet-gif": "^1.0.8"
   },
   "devDependencies": {
     "eslint": "^7.32.0"

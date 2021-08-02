@@ -26,14 +26,18 @@ client.on("presenceUpdate", async (oldMember, newMember) => {
     var channel = await client.channels.fetch("870918853402701858");
     var userId = newMember.member.id;
     if (users.indexOf(userId) >= 0 && newMember.status === "online" && (oldMember && oldMember.status === "offline" || true)) {
-        var animatedGif = await petpet(newMember.user.displayAvatarURL({"format": "png"}));
-        var attachment = new MessageAttachment(animatedGif, "patpat.gif");
-        attachment.height = 32;
-        attachment.width = 32;
-        channel.send(`Welcome back <@${userId}>!\nYou were last online <t:${lastMessageTime[userId].toString().slice(0, -3)}:R>.`, {
-            files: [attachment]
-        }).then(msg => msg.delete({timeout: 20000}));
-        lastMessageTime[userId] = Date.now();
+        if (newMember.status === "online" && (oldMember && oldMember.status === "offline" || true)) {
+            var animatedGif = await petpet(newMember.user.displayAvatarURL({"format": "png"}));
+            var attachment = new MessageAttachment(animatedGif, "patpat.gif");
+            attachment.height = 32;
+            attachment.width = 32;
+            channel.send(`Welcome back <@${userId}>!\nYou were last online <t:${lastMessageTime[userId].toString().slice(0, -3)}:R>.`, {
+                files: [attachment]
+            }).then(msg => msg.delete({timeout: 20000}));
+            lastMessageTime[userId] = Date.now();
+        } else if ((newMember.status === "idle" || newMember.status === "offline") && (oldMember && oldMember.status === "online" || true)) {
+            lastMessageTime[userId] = Date.now();
+        };
     };
 });
 

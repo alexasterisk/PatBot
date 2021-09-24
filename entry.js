@@ -6,12 +6,12 @@ const lastMessageTime = {};
 require('dotenv').config();
 const chalk = require("chalk");
 const petpet = require("pet-pet-gif");
-const {Client, MessageAttachment} = require("discord.js");
+const {Client, MessageAttachment, Intents} = require("discord.js");
 console.log(`Got request to start @ ${chalk.yellow(debugTime)}`);
 console.log(`Got all dependencies in ${chalk.yellow(Date.now() - debugTime)}ms`);
 debugTime = Date.now();
 
-var client = new Client({ws: {intents: ['GUILD_PRESENCES', 'GUILD_MEMBERS']}});
+const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_MEMBERS ] })
 
 client.once("ready", async () => {
     console.log(`\n--- Beginning ready state @ ${chalk.yellow(Date.now())} ${chalk.gray(`[Elapsed ${chalk.bgYellow(Date.now() - debugTime)}ms]`)} ---`);
@@ -42,21 +42,25 @@ client.once("ready", async () => {
 client.on("presenceUpdate", async (oldMember, newMember) => {
     console.log(`--- Got presenceUpdate request from ${chalk.green(newMember.user.id)} ---`);
     if (newMember.user.bot) return;
-    var channel = await client.channels.fetch(config.channel);
-    var userId = newMember.member.id;
+    const channel = await client.channels.fetch(config.channel);
+    const userId = newMember.member.id;
     if (config.allUsers || config.users.indexOf(userId) >= 0) {
         console.log(`* ${chalk.green(newMember.user.id)} is in ${chalk.gray('config.json#users')}`);
-        if (newMember.status === "online" && (!oldMember || !oldMember.status)) {
+        if (newMember.status === "online" && (oldMember?.status != 'online')) {
             console.log(`* ${chalk.green(newMember.user.id)} has gone online!`);
-            var animatedGif = await petpet(newMember.user.displayAvatarURL({"format": "png"}));
-            var attachment = new MessageAttachment(animatedGif, "patpat.gif");
+            const animatedGif = await petpet(newMember.user.displayAvatarURL({"format": "png"}));
+            let attachment = new MessageAttachment(animatedGif, "patpat.gif");
             attachment.height = 128;
             attachment.width = 128;
-            channel.send(`Welcome back <@${userId}>!\nYou were last online <t:${lastMessageTime[userId].toString().slice(0, -3)}:R>.`, {
+            await channel.send({
+                content: `Welcome back ${newMember.user}!\nYou were last online <t:${lastMessageTime[userId].toString().slice(0, -3)}:R>`,
                 files: [attachment]
-            }).then(msg => {try {msg.delete({timeout: 20000})} catch {}} );
+            }).then(async msg => {
+                await new Promise(r => setTimeout(r, 20000))
+                try {msg.delete()} catch {}
+            });
             lastMessageTime[userId] = Date.now();
-        } else if ((!newMember || !newMember.status || newMember.status === "idle")) {
+        } else if (newMember?.status === "idle" || newMember?.status === 'offline') {
             console.log(`* ${chalk.green(newMember.user.id)} has gone inactive/offline!`);
             lastMessageTime[userId] = Date.now();
         };
